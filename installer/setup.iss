@@ -1,13 +1,14 @@
 ; Inno Setup Script for MarkdownReader
-; Version: 1.0.0
+; Version: 1.1.1
 ; Publisher: Sergio Righi
 
 #define MyAppName "MarkdownReader"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.1.1"
 #define MyAppPublisher "Sergio Righi"
 #define MyAppExeName "MarkdownReader.exe"
 #define MyAppCopyright "© 2026 Sergio Righi"
 #define MyAppDescription "Lightweight Markdown Reader for Windows"
+#define MyAppId "{D8C8B1E1-4A59-4E62-8A2F-9A52378D8FE1}"
 
 [Setup]
 AppId={{D8C8B1E1-4A59-4E62-8A2F-9A52378D8FE1}
@@ -16,9 +17,11 @@ AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppCopyright={#MyAppCopyright}
-DefaultDirName={autopf}\{#MyAppName}
+DefaultDirName={code:GetDefaultInstallDir}
 DefaultGroupName={#MyAppName}
+DisableDirPage=no
 DisableProgramGroupPage=yes
+UsePreviousAppDir=yes
 OutputDir=..\dist
 OutputBaseFilename=MarkdownReader-{#MyAppVersion}-Setup
 SetupIconFile=..\assets\app_icon.ico
@@ -65,5 +68,66 @@ Root: HKA; Subkey: "Software\{#MyAppName}\Capabilities\FileAssociations"; ValueT
 Root: HKA; Subkey: "Software\{#MyAppName}\Capabilities\FileAssociations"; ValueType: string; ValueName: ".markdown"; ValueData: "MarkdownReader.Document"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\RegisteredApplications"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: "Software\{#MyAppName}\Capabilities"; Flags: uninsdeletevalue
 
+[InstallDelete]
+Type: files; Name: "{app}\unins001.*"
+
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+    if CurStep = ssPostInstall then
+    begin
+        // Remove stale duplicate registry key with extra closing brace if present
+        RegDeleteKeyIncludingSubkeys(HKLM32, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{D8C8B1E1-4A59-4E62-8A2F-9A52378D8FE1}}_is1');
+        RegDeleteKeyIncludingSubkeys(HKLM64, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{D8C8B1E1-4A59-4E62-8A2F-9A52378D8FE1}}_is1');
+        RegDeleteKeyIncludingSubkeys(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{D8C8B1E1-4A59-4E62-8A2F-9A52378D8FE1}}_is1');
+    end;
+end;
+
+function GetDefaultInstallDir(Param: String): String;
+var
+    InstallDir: String;
+begin
+    InstallDir := '';
+
+    // 1. Check Current User Registry
+    if RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppId}_is1', 'InstallLocation', InstallDir) and (InstallDir <> '') then
+    begin
+        Result := InstallDir;
+        Exit;
+    end;
+    if RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppId}_is1', 'Inno Setup: App Path', InstallDir) and (InstallDir <> '') then
+    begin
+        Result := InstallDir;
+        Exit;
+    end;
+
+    // 2. Check Local Machine (All Users) 64-bit Registry
+    if IsWin64 and RegQueryStringValue(HKLM64, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppId}_is1', 'InstallLocation', InstallDir) and (InstallDir <> '') then
+    begin
+        Result := InstallDir;
+        Exit;
+    end;
+    if IsWin64 and RegQueryStringValue(HKLM64, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppId}_is1', 'Inno Setup: App Path', InstallDir) and (InstallDir <> '') then
+    begin
+        Result := InstallDir;
+        Exit;
+    end;
+
+    // 3. Check Local Machine (All Users) 32-bit Registry (WOW6432Node)
+    if RegQueryStringValue(HKLM32, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppId}_is1', 'InstallLocation', InstallDir) and (InstallDir <> '') then
+    begin
+        Result := InstallDir;
+        Exit;
+    end;
+    if RegQueryStringValue(HKLM32, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppId}_is1', 'Inno Setup: App Path', InstallDir) and (InstallDir <> '') then
+    begin
+        Result := InstallDir;
+        Exit;
+    end;
+
+    // Default if not previously installed
+    Result := ExpandConstant('{autopf}\{#MyAppName}');
+end;

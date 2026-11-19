@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.1] — 2026-11-19
+
+### Fixed
+* **Live Reload / Auto-Update:** Normalized Windows UNC verbatim path prefixes (`\\?\`) in `DocumentTab::from_file`, CLI initial path handling, and WebView tab path matching (`updateTabContentByPath` / `addOrActivateTab`) so external file edits reload the open tab reliably.
+
+---
+
+## [1.1.0] — 2026-10-27
+
+### Added
+* **Live Reload / File Watcher:** Automatic file monitoring using native Windows `ReadDirectoryChangesW` (`notify-debouncer-mini`), reloading content seamlessly when files are modified externally.
+* **Scroll Preservation on Reload:** Viewport scroll position is preserved without jumping to the top when files are updated.
+* **GitHub Alerts / Callouts Support:** Beautiful formatting for `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]` (with Portuguese localized tags `[!NOTA]`, `[!DICA]`, `[!AVISO]`, `[!CUIDADO]`, `[!COMENTARIO]`) with dedicated SVG icons and colored cards.
+
+### Changed
+* **Window Title:** Fixed clean title bar displaying `"Markdown Reader"`, keeping file names on individual document tabs.
+* **Blockquote & Comments Styling:** Refined text contrast (`#cbd5e1`) and Prism code comment visibility (`#8b949e`).
+
+---
+
 ## [1.0.0] — 2026-09-22
 
 ### Added

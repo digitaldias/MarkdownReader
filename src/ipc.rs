@@ -9,7 +9,9 @@ const SOCKET_NAME: &str = "MarkdownReader-SingleInstance-V1";
 
 pub enum UserEvent {
     OpenFile(PathBuf),
-    UpdateTitle(String),
+    FileModified(PathBuf),
+    TabClosed(PathBuf),
+    UpdateTitle,
     OpenWelcome,
     ActivateWindow,
 }

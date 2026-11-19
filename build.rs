@@ -38,11 +38,13 @@ fn main() {
 
     #[cfg(windows)]
     {
+        let version = env!("CARGO_PKG_VERSION");
+        let file_version = format!("{}.0", version);
         let mut res = winres::WindowsResource::new();
         res.set_icon("assets/app_icon.ico");
         res.set("ProductName", "MarkdownReader");
-        res.set("ProductVersion", "1.0.0");
-        res.set("FileVersion", "1.0.0.0");
+        res.set("ProductVersion", version);
+        res.set("FileVersion", &file_version);
         res.set("FileDescription", "Lightweight Markdown Reader for Windows");
         res.set("OriginalFilename", "MarkdownReader.exe");
         res.set("CompanyName", "Sergio Righi");

@@ -34,7 +34,7 @@ Lightweight, read-only Markdown viewer for Windows.
 ### Installer
 Download and run the installer:
 ```text
-MarkdownReader-1.0.0-Setup.exe
+MarkdownReader-1.1.1-Setup.exe
 ```
 * Installs to `{localappdata}\Programs\MarkdownReader` by default (no administrator privileges required).
 * Optional "Install for all users" support for `Program Files`.
@@ -103,7 +103,7 @@ The compiled executable will be at `target\release\MarkdownReader.exe`.
 ```powershell
 iscc installer\setup.iss
 ```
-The resulting installer will be generated in `dist\MarkdownReader-1.0.0-Setup.exe`.
+The resulting installer will be generated in `dist\MarkdownReader-1.1.1-Setup.exe`.
 
 ---
 

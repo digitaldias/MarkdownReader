@@ -14,20 +14,20 @@ pub struct DocumentTab {
 
 impl DocumentTab {
     pub fn from_file(id: usize, path: &Path) -> Result<Self, std::io::Error> {
-        let canonical_path = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
-        let raw = fs::read_to_string(&canonical_path)?;
+        let normalized_path = crate::watcher::normalize_path(path);
+        let raw = fs::read_to_string(&normalized_path)?;
         let content = raw.strip_prefix('\u{feff}').unwrap_or(&raw);
-        let title = canonical_path
+        let title = normalized_path
             .file_name()
             .and_then(|n| n.to_str())
             .unwrap_or("Document")
             .to_string();
-        let base_dir = canonical_path.parent();
+        let base_dir = normalized_path.parent();
         let html_body = render_markdown_body(content, base_dir);
 
         Ok(Self {
             id,
-            path: Some(canonical_path),
+            path: Some(normalized_path),
             title,
             html_body,
             scroll_y: 0.0,
@@ -74,6 +74,14 @@ mod tests {
         assert!(tab.html_body.contains("<h1>MarkdownReader</h1>"));
         assert_eq!(tab.path, None);
         assert_eq!(tab.scroll_y, 0.0);
+    }
+
+    #[test]
+    fn test_from_file_normalizes_path() {
+        let tab = DocumentTab::from_file(2, Path::new("Cargo.toml")).unwrap();
+        let path_str = tab.path.unwrap().to_string_lossy().to_string();
+        assert!(!path_str.starts_with(r"\\?\"));
+        assert!(path_str.ends_with("Cargo.toml"));
     }
 }
 

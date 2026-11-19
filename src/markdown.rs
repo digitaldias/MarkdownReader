@@ -373,16 +373,94 @@ pub fn build_shell_html(config: &Config) -> String {
         }
 
         blockquote {
-            margin: 1.3em 0;
-            padding: 10px 18px;
+            margin: 1.4em 0;
+            padding: 12px 18px;
             background: var(--blockquote-bg);
             border-left: 4px solid var(--blockquote-border);
             border-radius: 0 6px 6px 0;
-            color: var(--muted-color);
+            color: #cbd5e1;
+        }
+
+        blockquote p {
+            color: #cbd5e1;
+            margin-bottom: 0.6em;
+            line-height: 1.6;
         }
 
         blockquote > :last-child {
             margin-bottom: 0;
+        }
+
+        /* GitHub-style Markdown Alerts / Callouts */
+        .markdown-alert {
+            margin: 1.4em 0;
+            padding: 12px 18px;
+            border-left: 4px solid;
+            border-radius: 0 6px 6px 0;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .markdown-alert-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .markdown-alert-header svg {
+            flex-shrink: 0;
+        }
+
+        .markdown-alert p {
+            margin-bottom: 0.5em;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .markdown-alert > :last-child {
+            margin-bottom: 0;
+        }
+
+        .markdown-alert-note {
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.08);
+        }
+        .markdown-alert-note .markdown-alert-header {
+            color: #60a5fa;
+        }
+
+        .markdown-alert-tip {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.08);
+        }
+        .markdown-alert-tip .markdown-alert-header {
+            color: #34d399;
+        }
+
+        .markdown-alert-important {
+            border-left-color: #a855f7;
+            background: rgba(168, 85, 247, 0.08);
+        }
+        .markdown-alert-important .markdown-alert-header {
+            color: #c084fc;
+        }
+
+        .markdown-alert-warning {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.08);
+        }
+        .markdown-alert-warning .markdown-alert-header {
+            color: #fbbf24;
+        }
+
+        .markdown-alert-caution {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+        }
+        .markdown-alert-caution .markdown-alert-header {
+            color: #f87171;
         }
 
         code {
@@ -484,7 +562,7 @@ pub fn build_shell_html(config: &Config) -> String {
 
         /* Prism Dark Syntax Highlighting */
         .token.comment, .token.prolog, .token.doctype, .token.cdata {
-            color: #71717a !important;
+            color: #8b949e !important;
             font-style: italic;
         }
         .token.punctuation {
@@ -1328,6 +1406,57 @@ pub fn build_shell_html(config: &Config) -> String {
                 }
             }
 
+            function enhanceAlertsAndQuotes(container) {
+                container.querySelectorAll('blockquote').forEach(bq => {
+                    const firstP = bq.querySelector('p');
+                    if (!firstP) return;
+
+                    const text = firstP.innerHTML.trim();
+                    const match = text.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION|NOTA|DICA|AVISO|IMPORTANTE|CUIDADO|ATENCAO|COMENTARIO)\]/i);
+                    if (match) {
+                        const rawType = match[1].toUpperCase();
+                        let alertType = 'note';
+                        let alertLabel = 'Nota';
+                        let iconSvg = '';
+
+                        if (rawType === 'NOTE' || rawType === 'NOTA' || rawType === 'COMENTARIO') {
+                            alertType = 'note';
+                            alertLabel = (rawType === 'COMENTARIO') ? 'Comentário' : 'Nota';
+                            iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+                        } else if (rawType === 'TIP' || rawType === 'DICA') {
+                            alertType = 'tip';
+                            alertLabel = 'Dica';
+                            iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>';
+                        } else if (rawType === 'IMPORTANT' || rawType === 'IMPORTANTE') {
+                            alertType = 'important';
+                            alertLabel = 'Importante';
+                            iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+                        } else if (rawType === 'WARNING' || rawType === 'AVISO' || rawType === 'ALERTA') {
+                            alertType = 'warning';
+                            alertLabel = 'Aviso';
+                            iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
+                        } else if (rawType === 'CAUTION' || rawType === 'CUIDADO' || rawType === 'ATENCAO') {
+                            alertType = 'caution';
+                            alertLabel = 'Cuidado';
+                            iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+                        }
+
+                        let remainingHtml = text.substring(match[0].length).replace(/^<br\s*\/?>/i, '').trim();
+                        if (remainingHtml) {
+                            firstP.innerHTML = remainingHtml;
+                        } else {
+                            firstP.remove();
+                        }
+
+                        bq.classList.add('markdown-alert', 'markdown-alert-' + alertType);
+                        const headerEl = document.createElement('div');
+                        headerEl.className = 'markdown-alert-header';
+                        headerEl.innerHTML = `${iconSvg}<span>${alertLabel}</span>`;
+                        bq.insertBefore(headerEl, bq.firstChild);
+                    }
+                });
+            }
+
             function fallbackCopy(text, callback) {
                 const ta = document.createElement('textarea');
                 ta.value = text;
@@ -1385,9 +1514,14 @@ pub fn build_shell_html(config: &Config) -> String {
                 });
             }
 
+            function normalizePathForMatch(filePath) {
+                return filePath.replace(/\\/g, '/').replace(/^\/\/\?\//, '').toLowerCase();
+            }
+
             window.addOrActivateTab = function(tabData, shouldActivate) {
                 if (tabData.path) {
-                    const existing = tabs.find(t => t.path && t.path === tabData.path);
+                    const normNew = normalizePathForMatch(tabData.path);
+                    const existing = tabs.find(t => t.path && normalizePathForMatch(t.path) === normNew);
                     if (existing) {
                         activateTab(existing.id);
                         return;
@@ -1439,6 +1573,9 @@ pub fn build_shell_html(config: &Config) -> String {
 
                 // Render Mermaid diagrams lazily if any exist in the tab
                 renderMermaidBlocks(container, tabData.id);
+
+                // Enhance alert callouts and blockquote comments
+                enhanceAlertsAndQuotes(container);
 
                 // Tab Click
                 tabEl.addEventListener('click', (e) => {
@@ -1498,6 +1635,9 @@ pub fn build_shell_html(config: &Config) -> String {
                 const idx = tabs.findIndex(t => t.id === tabId);
                 if (idx === -1) return;
 
+                const tab = tabs[idx];
+                const closedPath = tab ? tab.path : null;
+
                 const wasActive = activeTabId === tabId;
                 tabs.splice(idx, 1);
 
@@ -1505,6 +1645,10 @@ pub fn build_shell_html(config: &Config) -> String {
                 if (tabEl) tabEl.remove();
                 const paneEl = document.getElementById('pane-' + tabId);
                 if (paneEl) paneEl.remove();
+
+                if (closedPath) {
+                    notifyRust({ action: 'tab_closed', path: closedPath });
+                }
 
                 if (tabs.length === 0) {
                     activeTabId = null;
@@ -1515,6 +1659,35 @@ pub fn build_shell_html(config: &Config) -> String {
                 if (wasActive) {
                     const nextIdx = Math.min(idx, tabs.length - 1);
                     activateTab(tabs[nextIdx].id);
+                }
+            };
+
+            window.updateTabContentByPath = function(filePath, newHtmlBody) {
+                const normTarget = normalizePathForMatch(filePath);
+                const tab = tabs.find(t => t.path && normalizePathForMatch(t.path) === normTarget);
+                if (!tab) return;
+
+                tab.html_body = newHtmlBody;
+
+                const paneEl = document.getElementById('pane-' + tab.id);
+                if (!paneEl) return;
+
+                const container = paneEl.querySelector('.reader-container');
+                if (!container) return;
+
+                const isCurrent = (activeTabId === tab.id);
+                const prevScrollY = isCurrent ? window.scrollY : (tab.scrollY || 0);
+
+                container.innerHTML = newHtmlBody;
+
+                enhanceCodeBlocks(container);
+                renderMermaidBlocks(container, tab.id);
+                enhanceAlertsAndQuotes(container);
+
+                if (isCurrent) {
+                    window.scrollTo(0, prevScrollY);
+                } else {
+                    tab.scrollY = prevScrollY;
                 }
             };
 
@@ -1775,11 +1948,33 @@ mod tests {
         assert!(shell.contains("id=\"about-close-btn\""));
         assert!(shell.contains("id=\"btn-show-notices\""));
         assert!(shell.contains("id=\"btn-notices-back\""));
-        assert!(shell.contains("Version 1.0.0"));
+        assert!(shell.contains("Version 1.1.1"));
         assert!(shell.contains("Sergio Righi"));
         assert!(shell.contains("© 2026 Sergio Righi") || shell.contains("&copy; 2026 Sergio Righi"));
         assert!(shell.contains("MIT License"));
         assert!(shell.contains("__app_icon.png"));
         assert!(shell.contains("Third-Party Software Notices"));
+    }
+
+    #[test]
+    fn test_alerts_and_quotes_shell_integration() {
+        let config = Config::default();
+        let shell = build_shell_html(&config);
+
+        assert!(shell.contains(".markdown-alert"));
+        assert!(shell.contains(".markdown-alert-note"));
+        assert!(shell.contains(".markdown-alert-tip"));
+        assert!(shell.contains(".markdown-alert-warning"));
+        assert!(shell.contains("enhanceAlertsAndQuotes"));
+        assert!(shell.contains("updateTabContentByPath"));
+    }
+
+    #[test]
+    fn test_blockquote_and_comments_render() {
+        let md = "> Este é um comentário em citação\n\n> [!NOTE]\n> Nota formatada";
+        let html = render_markdown_body(md, None);
+        assert!(html.contains("<blockquote>"));
+        assert!(html.contains("Este é um comentário em citação"));
+        assert!(html.contains("[!NOTE]"));
     }
 }

@@ -5,6 +5,7 @@ mod config;
 mod ipc;
 mod markdown;
 mod tab;
+mod watcher;
 
 use config::Config;
 use ipc::UserEvent;
@@ -53,7 +54,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let initial_file_path = if args.len() > 1 {
         let path = PathBuf::from(&args[1]);
         if path.exists() {
-            Some(path.canonicalize().unwrap_or(path))
+            Some(watcher::normalize_path(&path))
         } else {
             Some(path)
         }
@@ -75,7 +76,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     ipc::start_ipc_server(proxy.clone());
 
     let mut window_builder = WindowBuilder::new()
-        .with_title("MarkdownReader")
+        .with_title("Markdown Reader")
         .with_inner_size(LogicalSize::new(config.width as f64, config.height as f64));
 
     if let Some(icon) = load_window_icon() {
@@ -143,8 +144,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             });
                         }
                         "tab_changed" => {
-                            if let Some(title) = parsed.get("title").and_then(|t| t.as_str()) {
-                                let _ = proxy_for_ipc.send_event(UserEvent::UpdateTitle(title.to_string()));
+                            let _ = proxy_for_ipc.send_event(UserEvent::UpdateTitle);
+                        }
+                        "tab_closed" => {
+                            if let Some(path_str) = parsed.get("path").and_then(|p| p.as_str()) {
+                                let path = PathBuf::from(path_str);
+                                let _ = proxy_for_ipc.send_event(UserEvent::TabClosed(path));
                             }
                         }
                         "all_tabs_closed" => {
@@ -175,6 +180,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
+    let mut file_watcher = match watcher::FileWatcher::new(proxy.clone()) {
+        Ok(w) => Some(w),
+        Err(e) => {
+            eprintln!("Failed to initialize file watcher: {}", e);
+            None
+        }
+    };
+
     // Load initial tab
     let initial_tab = if let Some(path) = initial_file_path {
         DocumentTab::from_file(get_next_tab_id(), &path).unwrap_or_else(|_| DocumentTab::new_welcome(get_next_tab_id()))
@@ -182,10 +195,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         DocumentTab::new_welcome(get_next_tab_id())
     };
 
+    if let (Some(w), Some(path)) = (&mut file_watcher, &initial_tab.path) {
+        w.watch_file(path);
+    }
+
     if let Ok(json_str) = serde_json::to_string(&initial_tab) {
         let script = format!("window.addOrActivateTab({}, true);", json_str);
         let _ = webview.evaluate_script(&script);
-        window.set_title(&format!("{} - MarkdownReader", initial_tab.title));
+        window.set_title("Markdown Reader");
     }
 
     let _ = webview.focus();
@@ -195,6 +212,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         match event {
             Event::UserEvent(UserEvent::OpenFile(path)) => {
+                if let Some(w) = &mut file_watcher {
+                    w.watch_file(&path);
+                }
+
                 let tab = match DocumentTab::from_file(get_next_tab_id(), &path) {
                     Ok(t) => t,
                     Err(e) => {
@@ -217,14 +238,43 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 if let Ok(json_str) = serde_json::to_string(&tab) {
                     let script = format!("window.addOrActivateTab({}, true);", json_str);
                     let _ = webview.evaluate_script(&script);
-                    window.set_title(&format!("{} - MarkdownReader", tab.title));
+                    window.set_title("Markdown Reader");
                 }
 
                 window.set_minimized(false);
                 window.set_focus();
             }
-            Event::UserEvent(UserEvent::UpdateTitle(title)) => {
-                window.set_title(&format!("{} - MarkdownReader", title));
+            Event::UserEvent(UserEvent::TabClosed(path)) => {
+                if let Some(w) = &mut file_watcher {
+                    w.unwatch_file(&path);
+                }
+            }
+            Event::UserEvent(UserEvent::FileModified(path)) => {
+                // Read file with retries in case of editor write-lock
+                let mut content = None;
+                for _ in 0..3 {
+                    if let Ok(raw) = std::fs::read_to_string(&path) {
+                        content = Some(raw);
+                        break;
+                    }
+                    std::thread::sleep(std::time::Duration::from_millis(35));
+                }
+
+                if let Some(raw) = content {
+                    let clean = raw.strip_prefix('\u{feff}').unwrap_or(&raw);
+                    let base_dir = path.parent();
+                    let html_body = markdown::render_markdown_body(clean, base_dir);
+                    if let (Ok(json_path), Ok(json_body)) = (
+                        serde_json::to_string(&path.to_string_lossy().to_string()),
+                        serde_json::to_string(&html_body),
+                    ) {
+                        let script = format!("window.updateTabContentByPath({}, {});", json_path, json_body);
+                        let _ = webview.evaluate_script(&script);
+                    }
+                }
+            }
+            Event::UserEvent(UserEvent::UpdateTitle) => {
+                window.set_title("Markdown Reader");
             }
             Event::UserEvent(UserEvent::OpenWelcome) => {
                 let id = get_next_tab_id();
@@ -232,7 +282,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 if let Ok(json_str) = serde_json::to_string(&welcome) {
                     let script = format!("window.addOrActivateTab({}, true);", json_str);
                     let _ = webview.evaluate_script(&script);
-                    window.set_title("Welcome - MarkdownReader");
+                    window.set_title("Markdown Reader");
                 }
             }
             Event::UserEvent(UserEvent::ActivateWindow) => {
