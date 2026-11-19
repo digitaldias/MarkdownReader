@@ -322,18 +322,31 @@ pub fn build_shell_html(config: &Config) -> String {
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 0;
+            border: 0;
+            background: transparent;
             cursor: pointer;
             color: var(--muted-color);
-            font-size: 18px;
             border-radius: 6px;
             margin-left: 4px;
             margin-right: 8px;
             transition: background 0.15s ease, color 0.15s ease;
         }
 
+        #btn-new-tab svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+        }
+
         #btn-new-tab:hover {
             background: var(--tab-hover-bg);
             color: var(--heading-color);
+        }
+
+        #btn-new-tab:focus-visible {
+            outline: 2px solid var(--tab-active-accent);
+            outline-offset: 1px;
         }
 
         #btn-about {
@@ -1064,7 +1077,12 @@ pub fn build_shell_html(config: &Config) -> String {
 <body>
     <div id="tab-bar">
         <div id="tab-list"></div>
-        <div id="btn-new-tab" title="Abrir Arquivo (Ctrl+O)">+</div>
+        <button id="btn-new-tab" type="button" title="Open file (Ctrl+O)" aria-label="Open file (Ctrl+O)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3.5 6.5h6l2 2h9v9.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z" />
+                <path d="M3.5 8.5v-2a2 2 0 0 1 2-2h4l2 2" />
+            </svg>
+        </button>
         <div id="btn-about" title="About MarkdownReader">&#x24D8;</div>
     </div>
 
@@ -1998,6 +2016,7 @@ mod tests {
         assert!(shell.contains("id=\"tab-bar\""));
         assert!(shell.contains("id=\"tab-list\""));
         assert!(shell.contains("id=\"btn-new-tab\""));
+        assert!(shell.contains("<button id=\"btn-new-tab\""));
         assert!(shell.contains("id=\"btn-about\""));
         assert!(shell.contains("id=\"find-box\""));
         assert!(shell.contains("id=\"tab-panes\""));

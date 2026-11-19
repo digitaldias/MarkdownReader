@@ -40,7 +40,7 @@ impl DocumentTab {
 A lightweight, fast, native Markdown viewer for Windows.
 
 ### Shortcuts & Tabs
-* **Open File** — Click `+` or press `Ctrl+O`.
+* **Open File** — Click the Open File button or press `Ctrl+O`.
 * **Close Tab** — Click `×`, middle-click tab, or press `Ctrl+W`.
 * **Switch Tabs** — Click a tab or press `Ctrl+Tab` / `Ctrl+Shift+Tab`.
 * **In-page Search** — Press `Ctrl+F`.
