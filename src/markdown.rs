@@ -351,27 +351,88 @@ pub fn build_shell_html(config: &Config) -> String {
             user-select: none;
         }
 
-        #language-select {
+        #language-button {
             margin-left: auto;
             margin-right: 4px;
-            max-width: 150px;
+            width: 30px;
             height: 28px;
-            padding: 2px 26px 2px 8px;
+            padding: 0;
             border: 1px solid transparent;
             border-radius: 6px;
             background-color: var(--tab-bar-bg);
-            color: var(--muted-color);
-            font-family: var(--font-family);
-            font-size: 12px;
             cursor: pointer;
+            color: var(--muted-color);
+        }
+
+        #language-button:hover,
+        #language-button:focus-visible {
+            background-color: var(--tab-hover-bg);
+            border-color: var(--border-color);
             outline: none;
         }
 
-        #language-select:hover,
-        #language-select:focus {
-            background-color: var(--tab-hover-bg);
-            border-color: var(--border-color);
-            color: var(--heading-color);
+        #language-button svg {
+            width: 19px;
+            height: 19px;
+            display: block;
+            margin: auto;
+        }
+
+        #language-menu {
+            display: none;
+            position: fixed;
+            top: 36px;
+            right: 34px;
+            min-width: 210px;
+            max-height: min(420px, calc(100vh - 48px));
+            overflow-y: auto;
+            padding: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--tab-hover-bg);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+            z-index: 99999;
+        }
+
+        #language-menu.open {
+            display: block;
+        }
+
+        .language-option {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 9px;
+            border: 0;
+            border-radius: 5px;
+            background: transparent;
+            color: var(--text-color);
+            font-family: var(--font-family);
+            font-size: 13px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .language-option:hover,
+        .language-option:focus-visible,
+        .language-option[aria-checked="true"] {
+            background: rgba(59, 130, 246, 0.16);
+            outline: none;
+        }
+
+        .language-option .flag {
+            width: 24px;
+            flex: 0 0 24px;
+            text-align: center;
+        }
+
+        .language-option .flag svg {
+            width: 22px;
+            height: 15px;
+            display: block;
+            border-radius: 2px;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
         }
 
         #btn-about:hover {
@@ -1087,21 +1148,10 @@ pub fn build_shell_html(config: &Config) -> String {
     <div id="tab-bar">
         <div id="tab-list"></div>
         <div id="btn-new-tab" data-i18n-title="openFile" title="Open file (Ctrl+O)">+</div>
-        <select id="language-select" data-i18n-title="language" data-i18n-aria-label="language" title="Language" aria-label="Language">
-            <option value="system" data-i18n="systemDefault">System default</option>
-            <option value="en">English</option>
-            <option value="zh">中文</option>
-            <option value="es">Español</option>
-            <option value="hi">हिन्दी</option>
-            <option value="pt">Português</option>
-            <option value="de">Deutsch</option>
-            <option value="ja">日本語</option>
-            <option value="fr">Français</option>
-            <option value="ru">Русский</option>
-            <option value="ko">한국어</option>
-        </select>
+        <button id="language-button" type="button" data-i18n-title="language" data-i18n-aria-label="language" title="Language" aria-label="Language" aria-haspopup="menu" aria-expanded="false"></button>
         <div id="btn-about" data-i18n-title="about" title="About MarkdownReader">&#x24D8;</div>
     </div>
+    <div id="language-menu" role="menu" data-i18n-aria-label="language" aria-label="Language"></div>
 
     <div id="find-box">
         <input type="text" id="find-input" data-i18n-placeholder="searchDocument" placeholder="Search document..." autocomplete="off">
@@ -1411,6 +1461,102 @@ pub fn build_shell_html(config: &Config) -> String {
                 ? systemLocale
                 : (supportedLocales.includes(savedLocalePreference) ? savedLocalePreference : systemLocale);
 
+            const welcomeCopy = {
+                en: {
+                    intro: 'A lightweight, fast, native Markdown viewer for Windows.',
+                    shortcuts: ['Shortcuts & Tabs', 'Open File', 'Use the toolbar button or Ctrl+O.', 'Close Tab', 'Click ×, middle-click a tab, or press Ctrl+W.', 'Switch Tabs', 'Click a tab or press Ctrl+Tab / Ctrl+Shift+Tab.', 'In-page Search', 'Press Ctrl+F.'],
+                    languages: ['Interface Languages', 'English, Chinese, Spanish, Hindi, Portuguese, German, Japanese, French, Russian, and Korean are supported. Use the language button in the top bar to follow the system language or choose one explicitly.'],
+                    features: ['Features', 'Single WebView2 Engine', 'Ultra lightweight, fast tab switching with independent scroll preservation.', 'Pure Read-Only', 'No editing clutter, no carets, no accidental modifications.', 'Rich Markdown', 'Tables, fenced code blocks, task lists, blockquotes, and images.', 'Local Images', 'Relative image paths resolved automatically per tab.']
+                },
+                pt: {
+                    intro: 'Um leitor de Markdown leve, rápido e nativo para Windows.',
+                    shortcuts: ['Atalhos e abas', 'Abrir arquivo', 'Use o botão da barra de ferramentas ou Ctrl+O.', 'Fechar aba', 'Clique em ×, clique com o botão do meio na aba ou pressione Ctrl+W.', 'Alternar abas', 'Clique em uma aba ou pressione Ctrl+Tab / Ctrl+Shift+Tab.', 'Buscar na página', 'Pressione Ctrl+F.'],
+                    languages: ['Idiomas da interface', 'Há suporte para inglês, chinês, espanhol, hindi, português, alemão, japonês, francês, russo e coreano. Use o botão de idioma na barra superior para seguir o sistema ou escolher um idioma.'],
+                    features: ['Recursos', 'Mecanismo WebView2 único', 'Muito leve, com troca rápida de abas e rolagem independente.', 'Somente leitura', 'Sem edição, cursores ou modificações acidentais.', 'Markdown completo', 'Tabelas, blocos de código, listas de tarefas, citações e imagens.', 'Imagens locais', 'Caminhos relativos de imagens são resolvidos por aba.']
+                },
+                es: {
+                    intro: 'Un lector de Markdown ligero, rápido y nativo para Windows.',
+                    shortcuts: ['Atajos y pestañas', 'Abrir archivo', 'Usa el botón de la barra o Ctrl+O.', 'Cerrar pestaña', 'Haz clic en ×, usa el botón central o pulsa Ctrl+W.', 'Cambiar pestaña', 'Haz clic en una pestaña o pulsa Ctrl+Tab / Ctrl+Shift+Tab.', 'Buscar en la página', 'Pulsa Ctrl+F.'],
+                    languages: ['Idiomas de la interfaz', 'Se admite inglés, chino, español, hindi, portugués, alemán, japonés, francés, ruso y coreano. Usa el botón de idioma de la barra superior para seguir el sistema o elegir uno.'],
+                    features: ['Funciones', 'Un solo motor WebView2', 'Muy ligero, con pestañas rápidas y desplazamiento independiente.', 'Solo lectura', 'Sin edición, cursores ni cambios accidentales.', 'Markdown completo', 'Tablas, bloques de código, listas, citas e imágenes.', 'Imágenes locales', 'Las rutas relativas se resuelven automáticamente por pestaña.']
+                },
+                zh: {
+                    intro: '适用于 Windows 的轻量、快速、原生 Markdown 阅读器。',
+                    shortcuts: ['快捷键和标签页', '打开文件', '使用工具栏按钮或 Ctrl+O。', '关闭标签页', '单击 ×、用鼠标中键单击标签页或按 Ctrl+W。', '切换标签页', '单击标签页或按 Ctrl+Tab / Ctrl+Shift+Tab。', '页内搜索', '按 Ctrl+F。'],
+                    languages: ['界面语言', '支持英语、中文、西班牙语、印地语、葡萄牙语、德语、日语、法语、俄语和韩语。使用顶部栏的语言按钮可跟随系统语言或手动选择。'],
+                    features: ['功能', '单一 WebView2 引擎', '极其轻量，标签页切换快速并保留各自滚动位置。', '纯只读', '没有编辑干扰、光标或意外修改。', '丰富的 Markdown', '支持表格、代码块、任务列表、引用和图像。', '本地图像', '每个标签页自动解析相对图像路径。']
+                },
+                hi: {
+                    intro: 'Windows के लिए हल्का, तेज़ और मूल Markdown रीडर।',
+                    shortcuts: ['शॉर्टकट और टैब', 'फ़ाइल खोलें', 'टूलबार बटन या Ctrl+O का उपयोग करें।', 'टैब बंद करें', '× पर क्लिक करें, टैब पर मध्य-क्लिक करें या Ctrl+W दबाएं।', 'टैब बदलें', 'टैब पर क्लिक करें या Ctrl+Tab / Ctrl+Shift+Tab दबाएं।', 'पृष्ठ में खोजें', 'Ctrl+F दबाएं।'],
+                    languages: ['इंटरफ़ेस भाषाएं', 'अंग्रेज़ी, चीनी, स्पेनिश, हिंदी, पुर्तगाली, जर्मन, जापानी, फ़्रेंच, रूसी और कोरियाई समर्थित हैं। सिस्टम भाषा के साथ चलने या भाषा चुनने के लिए शीर्ष पट्टी का भाषा बटन उपयोग करें।'],
+                    features: ['सुविधाएं', 'एक WebView2 इंजन', 'अत्यंत हल्का, तेज़ टैब बदलाव और स्वतंत्र स्क्रॉल स्थिति।', 'केवल पढ़ने के लिए', 'संपादन, कर्सर या अनजाने बदलाव नहीं।', 'समृद्ध Markdown', 'तालिकाएं, कोड ब्लॉक, कार्य सूचियां, उद्धरण और चित्र।', 'स्थानीय चित्र', 'प्रत्येक टैब में सापेक्ष चित्र पथ अपने आप हल होते हैं।']
+                },
+                de: {
+                    intro: 'Ein schlanker, schneller, nativer Markdown-Reader für Windows.',
+                    shortcuts: ['Tastenkürzel und Tabs', 'Datei öffnen', 'Schaltfläche der Symbolleiste oder Strg+O verwenden.', 'Tab schließen', '× anklicken, Tab mit der mittleren Maustaste anklicken oder Strg+W drücken.', 'Tabs wechseln', 'Tab anklicken oder Strg+Tab / Strg+Umschalt+Tab drücken.', 'Auf der Seite suchen', 'Strg+F drücken.'],
+                    languages: ['Oberflächensprachen', 'Unterstützt werden Englisch, Chinesisch, Spanisch, Hindi, Portugiesisch, Deutsch, Japanisch, Französisch, Russisch und Koreanisch. Mit der Sprachschaltfläche können Sie der Systemsprache folgen oder eine Sprache wählen.'],
+                    features: ['Funktionen', 'Eine WebView2-Engine', 'Sehr schlank, schnelle Tabs und unabhängige Scrollpositionen.', 'Nur lesen', 'Keine Bearbeitung, Einfügemarken oder versehentlichen Änderungen.', 'Umfangreiches Markdown', 'Tabellen, Codeblöcke, Aufgabenlisten, Zitate und Bilder.', 'Lokale Bilder', 'Relative Bildpfade werden pro Tab automatisch aufgelöst.']
+                },
+                ja: {
+                    intro: 'Windows 用の軽量で高速なネイティブ Markdown リーダー。',
+                    shortcuts: ['ショートカットとタブ', 'ファイルを開く', 'ツールバーのボタンまたは Ctrl+O を使用します。', 'タブを閉じる', '× をクリック、タブを中クリック、または Ctrl+W を押します。', 'タブを切り替える', 'タブをクリックするか Ctrl+Tab / Ctrl+Shift+Tab を押します。', 'ページ内検索', 'Ctrl+F を押します。'],
+                    languages: ['インターフェイス言語', '英語、中国語、スペイン語、ヒンディー語、ポルトガル語、ドイツ語、日本語、フランス語、ロシア語、韓国語に対応しています。上部の言語ボタンでシステム設定に従うか、言語を選択できます。'],
+                    features: ['機能', '単一の WebView2 エンジン', '非常に軽量で、タブの切り替えが速くスクロール位置も独立しています。', '読み取り専用', '編集、キャレット、意図しない変更はありません。', '豊富な Markdown', '表、コードブロック、タスクリスト、引用、画像に対応。', 'ローカル画像', '相対画像パスをタブごとに自動解決します。']
+                },
+                fr: {
+                    intro: 'Un lecteur Markdown léger, rapide et natif pour Windows.',
+                    shortcuts: ['Raccourcis et onglets', 'Ouvrir un fichier', 'Utilisez le bouton de la barre ou Ctrl+O.', 'Fermer l’onglet', 'Cliquez sur ×, cliquez avec le bouton du milieu ou appuyez sur Ctrl+W.', 'Changer d’onglet', 'Cliquez sur un onglet ou appuyez sur Ctrl+Tab / Ctrl+Maj+Tab.', 'Rechercher dans la page', 'Appuyez sur Ctrl+F.'],
+                    languages: ['Langues de l’interface', 'L’anglais, le chinois, l’espagnol, l’hindi, le portugais, l’allemand, le japonais, le français, le russe et le coréen sont pris en charge. Utilisez le bouton de langue pour suivre le système ou choisir une langue.'],
+                    features: ['Fonctions', 'Un seul moteur WebView2', 'Très léger, avec des onglets rapides et un défilement indépendant.', 'Lecture seule', 'Aucune édition, curseur ni modification accidentelle.', 'Markdown complet', 'Tableaux, blocs de code, listes de tâches, citations et images.', 'Images locales', 'Les chemins relatifs sont résolus automatiquement par onglet.']
+                },
+                ru: {
+                    intro: 'Лёгкая, быстрая нативная программа для чтения Markdown в Windows.',
+                    shortcuts: ['Сочетания клавиш и вкладки', 'Открыть файл', 'Используйте кнопку панели или Ctrl+O.', 'Закрыть вкладку', 'Нажмите ×, щёлкните средней кнопкой или нажмите Ctrl+W.', 'Переключить вкладки', 'Щёлкните по вкладке или нажмите Ctrl+Tab / Ctrl+Shift+Tab.', 'Поиск на странице', 'Нажмите Ctrl+F.'],
+                    languages: ['Языки интерфейса', 'Поддерживаются английский, китайский, испанский, хинди, португальский, немецкий, японский, французский, русский и корейский. Используйте кнопку языка на верхней панели, чтобы следовать языку системы или выбрать язык.'],
+                    features: ['Возможности', 'Один движок WebView2', 'Очень лёгкая программа с быстрыми вкладками и независимой прокруткой.', 'Только чтение', 'Без редактирования, курсора и случайных изменений.', 'Богатый Markdown', 'Таблицы, блоки кода, списки задач, цитаты и изображения.', 'Локальные изображения', 'Относительные пути изображений разрешаются отдельно для каждой вкладки.']
+                },
+                ko: {
+                    intro: 'Windows용 빠르고 가벼운 네이티브 Markdown 리더입니다.',
+                    shortcuts: ['단축키와 탭', '파일 열기', '도구 모음 버튼 또는 Ctrl+O를 사용합니다.', '탭 닫기', '×를 클릭하거나 탭을 가운데 클릭하거나 Ctrl+W를 누릅니다.', '탭 전환', '탭을 클릭하거나 Ctrl+Tab / Ctrl+Shift+Tab을 누릅니다.', '페이지 내 검색', 'Ctrl+F를 누릅니다.'],
+                    languages: ['인터페이스 언어', '영어, 중국어, 스페인어, 힌디어, 포르투갈어, 독일어, 일본어, 프랑스어, 러시아어, 한국어를 지원합니다. 상단의 언어 버튼에서 시스템 언어를 따르거나 직접 선택할 수 있습니다.'],
+                    features: ['기능', '단일 WebView2 엔진', '매우 가볍고 빠른 탭 전환과 독립적인 스크롤 위치를 제공합니다.', '읽기 전용', '편집, 캐럿 또는 의도하지 않은 변경이 없습니다.', '풍부한 Markdown', '표, 코드 블록, 작업 목록, 인용문, 이미지를 지원합니다.', '로컬 이미지', '각 탭에서 상대 이미지 경로를 자동으로 해석합니다.']
+                }
+            };
+
+            function appendWelcomeList(container, values) {
+                const list = document.createElement('ul');
+                for (let index = 1; index < values.length; index += 2) {
+                    const item = document.createElement('li');
+                    const label = document.createElement('strong');
+                    label.textContent = values[index];
+                    item.append(label, document.createTextNode(` — ${values[index + 1]}`));
+                    list.appendChild(item);
+                }
+                container.appendChild(list);
+            }
+
+            function renderWelcome(container) {
+                const copy = welcomeCopy[locale] || welcomeCopy.en;
+                const title = document.createElement('h1');
+                title.textContent = 'MarkdownReader';
+                const intro = document.createElement('p');
+                intro.textContent = copy.intro;
+                const shortcutsTitle = document.createElement('h3');
+                shortcutsTitle.textContent = copy.shortcuts[0];
+                const languagesTitle = document.createElement('h3');
+                languagesTitle.textContent = copy.languages[0];
+                const languages = document.createElement('p');
+                languages.textContent = copy.languages[1];
+                const featuresTitle = document.createElement('h3');
+                featuresTitle.textContent = copy.features[0];
+
+                container.replaceChildren(title, intro, shortcutsTitle);
+                appendWelcomeList(container, copy.shortcuts);
+                container.append(languagesTitle, languages, featuresTitle);
+                appendWelcomeList(container, copy.features);
+            }
+
             function t(key) {
                 return translations[locale][key] || translations.en[key] || key;
             }
@@ -1429,6 +1575,7 @@ pub fn build_shell_html(config: &Config) -> String {
                 document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
                     element.setAttribute('aria-label', t(element.dataset.i18nAriaLabel));
                 });
+                document.querySelectorAll('.tab-pane[data-welcome="true"] .reader-container').forEach(renderWelcome);
             }
 
             applyTranslations();
@@ -1436,18 +1583,97 @@ pub fn build_shell_html(config: &Config) -> String {
             const tabList = document.getElementById('tab-list');
             const tabPanes = document.getElementById('tab-panes');
             const btnNewTab = document.getElementById('btn-new-tab');
-            const languageSelect = document.getElementById('language-select');
-            languageSelect.value = savedLocalePreference === 'system' || supportedLocales.includes(savedLocalePreference)
+            const languageButton = document.getElementById('language-button');
+            const languageMenu = document.getElementById('language-menu');
+            let languagePreference = savedLocalePreference === 'system' || supportedLocales.includes(savedLocalePreference)
                 ? savedLocalePreference
                 : 'system';
-            languageSelect.addEventListener('change', () => {
-                const preference = languageSelect.value;
-                locale = preference === 'system'
-                    ? systemLocale
-                    : preference;
+            const languageOptions = [
+                { code: 'system', key: 'systemDefault' },
+                { code: 'en', name: 'English' },
+                { code: 'zh', name: '中文' },
+                { code: 'es', name: 'Español' },
+                { code: 'hi', name: 'हिन्दी' },
+                { code: 'pt', name: 'Português' },
+                { code: 'de', name: 'Deutsch' },
+                { code: 'ja', name: '日本語' },
+                { code: 'fr', name: 'Français' },
+                { code: 'ru', name: 'Русский' },
+                { code: 'ko', name: '한국어' }
+            ];
+
+            function languageFlag(code) {
+                const flags = {
+                    system: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.5 9h17M3.5 15h17M12 3c2.2 2.5 3.3 5.5 3.3 9S14.2 18.5 12 21M12 3C9.8 5.5 8.7 8.5 8.7 12S9.8 18.5 12 21"/></svg>',
+                    en: '<svg viewBox="0 0 24 16" aria-hidden="true"><path fill="rgb(1,33,105)" d="M0 0h24v16H0z"/><path stroke="white" stroke-width="3.2" d="m0 0 24 16M24 0 0 16"/><path stroke="rgb(200,16,46)" stroke-width="1.35" d="m0 0 24 16M24 0 0 16"/><path stroke="white" stroke-width="5.2" d="M12 0v16M0 8h24"/><path stroke="rgb(200,16,46)" stroke-width="3" d="M12 0v16M0 8h24"/></svg>',
+                    zh: '<svg viewBox="0 0 24 16" aria-hidden="true"><path fill="rgb(222,41,16)" d="M0 0h24v16H0z"/><path fill="rgb(255,222,0)" d="m6 2 1 3 3 .1-2.4 1.8.8 3-2.4-1.8-2.5 1.8.9-3L2 5.1 5 5z"/></svg>',
+                    es: '<svg viewBox="0 0 24 16" aria-hidden="true"><path fill="rgb(170,21,27)" d="M0 0h24v16H0z"/><path fill="rgb(241,191,0)" d="M0 4h24v8H0z"/><path fill="rgb(170,21,27)" d="M6 6h2v4H6z"/></svg>',
+                    hi: '<svg viewBox="0 0 24 16" aria-hidden="true"><path fill="rgb(255,153,51)" d="M0 0h24v5.34H0z"/><path fill="white" d="M0 5.33h24v5.34H0z"/><path fill="rgb(19,136,8)" d="M0 10.66h24V16H0z"/><circle cx="12" cy="8" r="1.7" fill="none" stroke="rgb(0,0,128)" stroke-width=".8"/></svg>',
+                    pt: '<svg viewBox="0 0 24 16" aria-hidden="true"><path fill="rgb(0,102,0)" d="M0 0h9.5v16H0z"/><path fill="red" d="M9.5 0H24v16H9.5z"/><circle cx="9.5" cy="8" r="3" fill="rgb(255,204,0)"/><path fill="white" d="M8.2 6h2.6v4H8.2z"/><path fill="red" d="M8.7 6.5h1.6v2.8H8.7z"/></svg>',
+                    de: '<svg viewBox="0 0 24 16" aria-hidden="true"><path d="M0 0h24v5.34H0z"/><path fill="rgb(221,0,0)" d="M0 5.33h24v5.34H0z"/><path fill="rgb(255,206,0)" d="M0 10.66h24V16H0z"/></svg>',
+                    ja: '<svg viewBox="0 0 24 16" aria-hidden="true"><path fill="white" d="M0 0h24v16H0z"/><circle cx="12" cy="8" r="4.5" fill="rgb(188,0,45)"/></svg>',
+                    fr: '<svg viewBox="0 0 24 16" aria-hidden="true"><path fill="rgb(0,38,84)" d="M0 0h8v16H0z"/><path fill="white" d="M8 0h8v16H8z"/><path fill="rgb(206,17,38)" d="M16 0h8v16h-8z"/></svg>',
+                    ru: '<svg viewBox="0 0 24 16" aria-hidden="true"><path fill="white" d="M0 0h24v5.34H0z"/><path fill="rgb(0,57,166)" d="M0 5.33h24v5.34H0z"/><path fill="rgb(213,43,30)" d="M0 10.66h24V16H0z"/></svg>',
+                    ko: '<svg viewBox="0 0 24 16" aria-hidden="true"><path fill="white" d="M0 0h24v16H0z"/><circle cx="12" cy="8" r="4" fill="rgb(205,46,58)"/><path fill="rgb(0,71,160)" d="M8 8a4 4 0 0 0 8 0 4 4 0 0 1-8 0Z"/><path stroke="rgb(17,17,17)" stroke-width="1" d="m3 3 3-1M3.5 4.5l3-1M18 3l3 1M17.5 4.5l3 1M3 13l3-1M3.5 11.5l3-1M18 13l3-1M17.5 11.5l3-1"/></svg>'
+                };
+                return flags[code] || flags.system;
+            }
+
+            function updateLanguageMenu() {
+                const selected = languageOptions.find(option => option.code === languagePreference);
+                languageButton.innerHTML = languageFlag(selected?.code);
+                languageButton.title = `${t('language')}: ${selected?.key ? t(selected.key) : selected?.name}`;
+                languageButton.setAttribute('aria-label', languageButton.title);
+                languageMenu.replaceChildren(...languageOptions.map(option => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'language-option';
+                    button.setAttribute('role', 'menuitemradio');
+                    button.setAttribute('aria-checked', String(option.code === languagePreference));
+
+                    const flag = document.createElement('span');
+                    flag.className = 'flag';
+                    flag.innerHTML = languageFlag(option.code);
+                    const name = document.createElement('span');
+                    name.textContent = option.key ? t(option.key) : option.name;
+                    button.append(flag, name);
+                    button.addEventListener('click', () => setLanguagePreference(option.code));
+                    return button;
+                }));
+            }
+
+            function closeLanguageMenu() {
+                languageMenu.classList.remove('open');
+                languageButton.setAttribute('aria-expanded', 'false');
+            }
+
+            function setLanguagePreference(preference) {
+                languagePreference = preference;
+                locale = preference === 'system' ? systemLocale : preference;
+                const selectedOption = languageOptions.find(option => option.code === preference);
+                languageButton.innerHTML = languageFlag(selectedOption?.code);
+                languageMenu.querySelectorAll('.language-option').forEach((option, index) => {
+                    option.setAttribute('aria-checked', String(languageOptions[index].code === preference));
+                });
                 applyTranslations();
+                updateLanguageMenu();
                 notifyRust({ action: 'set_language', language: preference });
+                closeLanguageMenu();
+                languageButton.focus();
+            }
+
+            languageButton.addEventListener('click', () => {
+                const willOpen = !languageMenu.classList.contains('open');
+                languageMenu.classList.toggle('open', willOpen);
+                languageButton.setAttribute('aria-expanded', String(willOpen));
+                if (willOpen) languageMenu.querySelector('[aria-checked="true"]')?.focus();
             });
+            document.addEventListener('click', event => {
+                if (!languageMenu.contains(event.target) && !languageButton.contains(event.target)) {
+                    closeLanguageMenu();
+                }
+            });
+            updateLanguageMenu();
 
             const langDisplayMap = {
                 'rs': 'rust', 'rust': 'rust',
@@ -1945,14 +2171,18 @@ pub fn build_shell_html(config: &Config) -> String {
                 const container = document.createElement('div');
                 container.className = 'reader-container';
                 container.innerHTML = tabData.html_body;
+                if (!tabData.path) {
+                    paneEl.dataset.welcome = 'true';
+                    renderWelcome(container);
+                }
                 paneEl.appendChild(container);
                 tabPanes.appendChild(paneEl);
 
                 // Enhance code blocks with language labels, copy buttons, and Prism highlighting
-                enhanceCodeBlocks(container);
+                if (tabData.path) enhanceCodeBlocks(container);
 
                 // Render Mermaid diagrams lazily if any exist in the tab
-                renderMermaidBlocks(container, tabData.id);
+                if (tabData.path) renderMermaidBlocks(container, tabData.id);
 
                 // Enhance alert callouts and blockquote comments
                 enhanceAlertsAndQuotes(container);
@@ -2183,7 +2413,10 @@ pub fn build_shell_html(config: &Config) -> String {
                         window.nextTab();
                     }
                 } else if (e.key === 'Escape') {
-                    if (aboutOverlay && aboutOverlay.style.display !== 'none') {
+                    if (languageMenu.classList.contains('open')) {
+                        closeLanguageMenu();
+                        languageButton.focus();
+                    } else if (aboutOverlay && aboutOverlay.style.display !== 'none') {
                         closeAbout();
                     } else {
                         closeFind();
@@ -2318,7 +2551,9 @@ mod tests {
         assert!(shell.contains("id=\"tab-list\""));
         assert!(shell.contains("id=\"btn-new-tab\""));
         assert!(shell.contains("data-i18n-title=\"openFile\""));
-        assert!(shell.contains("id=\"language-select\""));
+        assert!(shell.contains("id=\"language-button\""));
+        assert!(shell.contains("id=\"language-menu\""));
+        assert!(shell.contains("renderWelcome"));
         assert!(shell.contains("const savedLocalePreference = \"system\""));
         assert!(shell.contains("const supportedLocales = Object.keys(translations)"));
         for locale in ["en", "pt", "es", "zh", "hi", "de", "ja", "fr", "ru", "ko"] {
