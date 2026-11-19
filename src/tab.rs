@@ -45,6 +45,10 @@ A lightweight, fast, native Markdown viewer for Windows.
 * **Switch Tabs** — Click a tab or press `Ctrl+Tab` / `Ctrl+Shift+Tab`.
 * **In-page Search** — Press `Ctrl+F`.
 
+### Interface Languages
+
+MarkdownReader supports English, Chinese, Spanish, Hindi, Portuguese, German, Japanese, French, Russian, and Korean. Use the language selector in the top bar to follow the system language or choose one explicitly.
+
 ### Features
 * **Single WebView2 Engine** — Ultra lightweight, fast tab switching with independent scroll preservation.
 * **Pure Read-Only** — No editing clutter, no carets, no accidental modifications.

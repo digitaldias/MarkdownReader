@@ -347,9 +347,31 @@ pub fn build_shell_html(config: &Config) -> String {
             font-size: 15px;
             border-radius: 6px;
             margin-right: 6px;
-            margin-left: auto;
             transition: background 0.15s ease, color 0.15s ease;
             user-select: none;
+        }
+
+        #language-select {
+            margin-left: auto;
+            margin-right: 4px;
+            max-width: 150px;
+            height: 28px;
+            padding: 2px 26px 2px 8px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            background-color: var(--tab-bar-bg);
+            color: var(--muted-color);
+            font-family: var(--font-family);
+            font-size: 12px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        #language-select:hover,
+        #language-select:focus {
+            background-color: var(--tab-hover-bg);
+            border-color: var(--border-color);
+            color: var(--heading-color);
         }
 
         #btn-about:hover {
@@ -1065,6 +1087,19 @@ pub fn build_shell_html(config: &Config) -> String {
     <div id="tab-bar">
         <div id="tab-list"></div>
         <div id="btn-new-tab" data-i18n-title="openFile" title="Open file (Ctrl+O)">+</div>
+        <select id="language-select" data-i18n-title="language" data-i18n-aria-label="language" title="Language" aria-label="Language">
+            <option value="system" data-i18n="systemDefault">System default</option>
+            <option value="en">English</option>
+            <option value="zh">中文</option>
+            <option value="es">Español</option>
+            <option value="hi">हिन्दी</option>
+            <option value="pt">Português</option>
+            <option value="de">Deutsch</option>
+            <option value="ja">日本語</option>
+            <option value="fr">Français</option>
+            <option value="ru">Русский</option>
+            <option value="ko">한국어</option>
+        </select>
         <div id="btn-about" data-i18n-title="about" title="About MarkdownReader">&#x24D8;</div>
     </div>
 
@@ -1139,6 +1174,8 @@ pub fn build_shell_html(config: &Config) -> String {
                 en: {
                     openFile: 'Open file (Ctrl+O)',
                     about: 'About MarkdownReader',
+                    language: 'Language',
+                    systemDefault: 'System default',
                     searchDocument: 'Search document...',
                     previous: 'Previous (Shift+Enter)',
                     next: 'Next (Enter)',
@@ -1160,6 +1197,8 @@ pub fn build_shell_html(config: &Config) -> String {
                 pt: {
                     openFile: 'Abrir arquivo (Ctrl+O)',
                     about: 'Sobre o MarkdownReader',
+                    language: 'Idioma',
+                    systemDefault: 'Padrão do sistema',
                     searchDocument: 'Buscar no documento...',
                     previous: 'Anterior (Shift+Enter)',
                     next: 'Próximo (Enter)',
@@ -1181,6 +1220,8 @@ pub fn build_shell_html(config: &Config) -> String {
                 es: {
                     openFile: 'Abrir archivo (Ctrl+O)',
                     about: 'Acerca de MarkdownReader',
+                    language: 'Idioma',
+                    systemDefault: 'Predeterminado del sistema',
                     searchDocument: 'Buscar en el documento...',
                     previous: 'Anterior (Shift+Enter)',
                     next: 'Siguiente (Enter)',
@@ -1202,6 +1243,8 @@ pub fn build_shell_html(config: &Config) -> String {
                 zh: {
                     openFile: '打开文件 (Ctrl+O)',
                     about: '关于 MarkdownReader',
+                    language: '语言',
+                    systemDefault: '系统默认',
                     searchDocument: '在文档中搜索...',
                     previous: '上一个 (Shift+Enter)',
                     next: '下一个 (Enter)',
@@ -1223,6 +1266,8 @@ pub fn build_shell_html(config: &Config) -> String {
                 hi: {
                     openFile: 'फ़ाइल खोलें (Ctrl+O)',
                     about: 'MarkdownReader के बारे में',
+                    language: 'भाषा',
+                    systemDefault: 'सिस्टम डिफ़ॉल्ट',
                     searchDocument: 'दस्तावेज़ में खोजें...',
                     previous: 'पिछला (Shift+Enter)',
                     next: 'अगला (Enter)',
@@ -1244,6 +1289,8 @@ pub fn build_shell_html(config: &Config) -> String {
                 de: {
                     openFile: 'Datei öffnen (Strg+O)',
                     about: 'Über MarkdownReader',
+                    language: 'Sprache',
+                    systemDefault: 'Systemstandard',
                     searchDocument: 'Dokument durchsuchen...',
                     previous: 'Zurück (Shift+Enter)',
                     next: 'Weiter (Enter)',
@@ -1265,6 +1312,8 @@ pub fn build_shell_html(config: &Config) -> String {
                 ja: {
                     openFile: 'ファイルを開く (Ctrl+O)',
                     about: 'MarkdownReader について',
+                    language: '言語',
+                    systemDefault: 'システムの既定',
                     searchDocument: 'ドキュメントを検索...',
                     previous: '前へ (Shift+Enter)',
                     next: '次へ (Enter)',
@@ -1286,6 +1335,8 @@ pub fn build_shell_html(config: &Config) -> String {
                 fr: {
                     openFile: 'Ouvrir un fichier (Ctrl+O)',
                     about: 'À propos de MarkdownReader',
+                    language: 'Langue',
+                    systemDefault: 'Langue du système',
                     searchDocument: 'Rechercher dans le document...',
                     previous: 'Précédent (Maj+Entrée)',
                     next: 'Suivant (Entrée)',
@@ -1307,6 +1358,8 @@ pub fn build_shell_html(config: &Config) -> String {
                 ru: {
                     openFile: 'Открыть файл (Ctrl+O)',
                     about: 'О программе MarkdownReader',
+                    language: 'Язык',
+                    systemDefault: 'Язык системы',
                     searchDocument: 'Поиск в документе...',
                     previous: 'Назад (Shift+Enter)',
                     next: 'Далее (Enter)',
@@ -1328,6 +1381,8 @@ pub fn build_shell_html(config: &Config) -> String {
                 ko: {
                     openFile: '파일 열기 (Ctrl+O)',
                     about: 'MarkdownReader 정보',
+                    language: '언어',
+                    systemDefault: '시스템 기본값',
                     searchDocument: '문서에서 검색...',
                     previous: '이전 (Shift+Enter)',
                     next: '다음 (Enter)',
@@ -1348,9 +1403,13 @@ pub fn build_shell_html(config: &Config) -> String {
                 }
             };
 
-            const browserLocale = (navigator.language || 'en').toLowerCase();
             const supportedLocales = Object.keys(translations);
-            const locale = supportedLocales.find(candidate => browserLocale.startsWith(candidate)) || 'en';
+            const browserLocale = (navigator.language || 'en').toLowerCase();
+            const systemLocale = supportedLocales.find(candidate => browserLocale.startsWith(candidate)) || 'en';
+            const savedLocalePreference = __LANGUAGE_JSON__;
+            let locale = savedLocalePreference === 'system'
+                ? systemLocale
+                : (supportedLocales.includes(savedLocalePreference) ? savedLocalePreference : systemLocale);
 
             function t(key) {
                 return translations[locale][key] || translations.en[key] || key;
@@ -1377,6 +1436,18 @@ pub fn build_shell_html(config: &Config) -> String {
             const tabList = document.getElementById('tab-list');
             const tabPanes = document.getElementById('tab-panes');
             const btnNewTab = document.getElementById('btn-new-tab');
+            const languageSelect = document.getElementById('language-select');
+            languageSelect.value = savedLocalePreference === 'system' || supportedLocales.includes(savedLocalePreference)
+                ? savedLocalePreference
+                : 'system';
+            languageSelect.addEventListener('change', () => {
+                const preference = languageSelect.value;
+                locale = preference === 'system'
+                    ? systemLocale
+                    : preference;
+                applyTranslations();
+                notifyRust({ action: 'set_language', language: preference });
+            });
 
             const langDisplayMap = {
                 'rs': 'rust', 'rust': 'rust',
@@ -1456,6 +1527,8 @@ pub fn build_shell_html(config: &Config) -> String {
 
                     const copyBtn = document.createElement('button');
                     copyBtn.className = 'code-copy-btn';
+                    copyBtn.dataset.i18n = 'copy';
+                    copyBtn.dataset.i18nTitle = 'copyCode';
                     copyBtn.textContent = t('copy');
                     copyBtn.title = t('copyCode');
 
@@ -1672,7 +1745,7 @@ pub fn build_shell_html(config: &Config) -> String {
                         const errHeader = document.createElement('div');
                         errHeader.className = 'mermaid-error-header';
                         errHeader.innerHTML = `
-                            <span class="mermaid-error-badge">⚠️ ${escapeHtml(t('diagramError'))}</span>
+                            <span class="mermaid-error-badge">⚠️ <span data-i18n="diagramError">${escapeHtml(t('diagramError'))}</span></span>
                             <span class="mermaid-error-text">${escapeHtml(errMsg)}</span>
                         `;
                         errContainer.appendChild(errHeader);
@@ -1690,6 +1763,8 @@ pub fn build_shell_html(config: &Config) -> String {
 
                         const copyBtn = document.createElement('button');
                         copyBtn.className = 'code-copy-btn';
+                        copyBtn.dataset.i18n = 'copy';
+                        copyBtn.dataset.i18nTitle = 'copyMermaidSource';
                         copyBtn.textContent = t('copy');
                         copyBtn.title = t('copyMermaidSource');
                         copyBtn.addEventListener('click', () => copyText(rawCode, copyBtn));
@@ -1851,6 +1926,7 @@ pub fn build_shell_html(config: &Config) -> String {
 
                 const closeEl = document.createElement('span');
                 closeEl.className = 'tab-close';
+                closeEl.dataset.i18nTitle = 'closeTab';
                 closeEl.textContent = '×';
                 closeEl.title = t('closeTab');
 
@@ -2141,6 +2217,10 @@ pub fn build_shell_html(config: &Config) -> String {
         .replace("__CODE_FONT_FAMILY__", &config.code_font_family)
         .replace("__FONT_SIZE__", &config.font_size.to_string())
         .replace("__CONTENT_WIDTH__", &config.content_width.to_string())
+        .replace(
+            "__LANGUAGE_JSON__",
+            &serde_json::to_string(&config.language).unwrap_or_else(|_| "\"system\"".to_string()),
+        )
         .replace("__PRISM_BUNDLE__", PRISM_JS)
         .replace("__APP_VERSION__", APP_VERSION)
         .replace("__THIRD_PARTY_NOTICES__", &escape_html_text(THIRD_PARTY_NOTICES))
@@ -2238,6 +2318,8 @@ mod tests {
         assert!(shell.contains("id=\"tab-list\""));
         assert!(shell.contains("id=\"btn-new-tab\""));
         assert!(shell.contains("data-i18n-title=\"openFile\""));
+        assert!(shell.contains("id=\"language-select\""));
+        assert!(shell.contains("const savedLocalePreference = \"system\""));
         assert!(shell.contains("const supportedLocales = Object.keys(translations)"));
         for locale in ["en", "pt", "es", "zh", "hi", "de", "ja", "fr", "ru", "ko"] {
             assert!(shell.contains(&format!("{locale}: {{")));
