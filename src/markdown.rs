@@ -1064,15 +1064,15 @@ pub fn build_shell_html(config: &Config) -> String {
 <body>
     <div id="tab-bar">
         <div id="tab-list"></div>
-        <div id="btn-new-tab" title="Abrir Arquivo (Ctrl+O)">+</div>
-        <div id="btn-about" title="About MarkdownReader">&#x24D8;</div>
+        <div id="btn-new-tab" data-i18n-title="openFile" title="Open file (Ctrl+O)">+</div>
+        <div id="btn-about" data-i18n-title="about" title="About MarkdownReader">&#x24D8;</div>
     </div>
 
     <div id="find-box">
-        <input type="text" id="find-input" placeholder="Buscar no documento..." autocomplete="off">
-        <button id="find-prev" title="Anterior (Shift+Enter)">&#x25B2;</button>
-        <button id="find-next" title="Próximo (Enter)">&#x25BC;</button>
-        <button id="find-close" title="Fechar (Esc)">&#x2715;</button>
+        <input type="text" id="find-input" data-i18n-placeholder="searchDocument" placeholder="Search document..." autocomplete="off">
+        <button id="find-prev" data-i18n-title="previous" title="Previous (Shift+Enter)">&#x25B2;</button>
+        <button id="find-next" data-i18n-title="next" title="Next (Enter)">&#x25BC;</button>
+        <button id="find-close" data-i18n-title="close" title="Close (Esc)">&#x2715;</button>
     </div>
 
     <div id="about-overlay" class="modal-overlay" style="display: none;">
@@ -1083,38 +1083,38 @@ pub fn build_shell_html(config: &Config) -> String {
                 </div>
                 <div class="modal-app-title">
                     <h2>MarkdownReader</h2>
-                    <div class="modal-version">Version __APP_VERSION__</div>
+                    <div class="modal-version"><span data-i18n="version">Version</span> __APP_VERSION__</div>
                 </div>
-                <button class="modal-close-btn" id="about-close-btn" title="Close (Esc)">&#x2715;</button>
+                <button class="modal-close-btn" id="about-close-btn" data-i18n-title="close" title="Close (Esc)">&#x2715;</button>
             </div>
             
             <div class="modal-body" id="about-main-view">
-                <p class="modal-desc">Lightweight Markdown Reader for Windows</p>
+                <p class="modal-desc" data-i18n="description">Lightweight Markdown Reader for Windows</p>
                 
                 <div class="modal-meta-section">
                     <div class="modal-meta-row">
-                        <span class="modal-meta-label">Author</span>
+                        <span class="modal-meta-label" data-i18n="author">Author</span>
                         <span class="modal-meta-value">Sergio Righi</span>
                     </div>
                     <div class="modal-meta-row">
-                        <span class="modal-meta-label">Copyright</span>
+                        <span class="modal-meta-label" data-i18n="copyright">Copyright</span>
                         <span class="modal-meta-value">&copy; 2026 Sergio Righi</span>
                     </div>
                     <div class="modal-meta-row">
-                        <span class="modal-meta-label">License</span>
+                        <span class="modal-meta-label" data-i18n="license">License</span>
                         <span class="modal-meta-value">MIT License</span>
                     </div>
                 </div>
 
                 <div class="modal-footer-links">
-                    <button class="modal-link-btn" id="btn-show-notices">Third-Party Notices</button>
+                    <button class="modal-link-btn" id="btn-show-notices" data-i18n="thirdPartyNotices">Third-Party Notices</button>
                 </div>
             </div>
 
             <div class="modal-body" id="about-notices-view" style="display: none;">
                 <div class="modal-notices-header">
-                    <button class="modal-back-btn" id="btn-notices-back">&larr; Back to About</button>
-                    <span class="modal-notices-title">Third-Party Notices</span>
+                    <button class="modal-back-btn" id="btn-notices-back">&larr; <span data-i18n="backToAbout">Back to About</span></button>
+                    <span class="modal-notices-title" data-i18n="thirdPartyNotices">Third-Party Notices</span>
                 </div>
                 <div class="modal-notices-scroll">
                     <pre class="modal-notices-text">__THIRD_PARTY_NOTICES__</pre>
@@ -1134,6 +1134,245 @@ pub fn build_shell_html(config: &Config) -> String {
             const tabs = [];
             let activeTabId = null;
             let draggedTabEl = null;
+
+            const translations = {
+                en: {
+                    openFile: 'Open file (Ctrl+O)',
+                    about: 'About MarkdownReader',
+                    searchDocument: 'Search document...',
+                    previous: 'Previous (Shift+Enter)',
+                    next: 'Next (Enter)',
+                    close: 'Close (Esc)',
+                    closeTab: 'Close tab (Ctrl+W)',
+                    version: 'Version',
+                    description: 'Lightweight Markdown Reader for Windows',
+                    author: 'Author',
+                    copyright: 'Copyright',
+                    license: 'License',
+                    thirdPartyNotices: 'Third-Party Notices',
+                    backToAbout: 'Back to About',
+                    copy: 'Copy',
+                    copied: 'Copied',
+                    copyCode: 'Copy code',
+                    copyMermaidSource: 'Copy Mermaid source',
+                    diagramError: 'Diagram Error'
+                },
+                pt: {
+                    openFile: 'Abrir arquivo (Ctrl+O)',
+                    about: 'Sobre o MarkdownReader',
+                    searchDocument: 'Buscar no documento...',
+                    previous: 'Anterior (Shift+Enter)',
+                    next: 'Próximo (Enter)',
+                    close: 'Fechar (Esc)',
+                    closeTab: 'Fechar aba (Ctrl+W)',
+                    version: 'Versão',
+                    description: 'Leitor de Markdown leve para Windows',
+                    author: 'Autor',
+                    copyright: 'Direitos autorais',
+                    license: 'Licença',
+                    thirdPartyNotices: 'Avisos de terceiros',
+                    backToAbout: 'Voltar para Sobre',
+                    copy: 'Copiar',
+                    copied: 'Copiado',
+                    copyCode: 'Copiar código',
+                    copyMermaidSource: 'Copiar código Mermaid',
+                    diagramError: 'Erro no diagrama'
+                },
+                es: {
+                    openFile: 'Abrir archivo (Ctrl+O)',
+                    about: 'Acerca de MarkdownReader',
+                    searchDocument: 'Buscar en el documento...',
+                    previous: 'Anterior (Shift+Enter)',
+                    next: 'Siguiente (Enter)',
+                    close: 'Cerrar (Esc)',
+                    closeTab: 'Cerrar pestaña (Ctrl+W)',
+                    version: 'Versión',
+                    description: 'Lector ligero de Markdown para Windows',
+                    author: 'Autor',
+                    copyright: 'Derechos de autor',
+                    license: 'Licencia',
+                    thirdPartyNotices: 'Avisos de terceros',
+                    backToAbout: 'Volver a Acerca de',
+                    copy: 'Copiar',
+                    copied: 'Copiado',
+                    copyCode: 'Copiar código',
+                    copyMermaidSource: 'Copiar código Mermaid',
+                    diagramError: 'Error de diagrama'
+                },
+                zh: {
+                    openFile: '打开文件 (Ctrl+O)',
+                    about: '关于 MarkdownReader',
+                    searchDocument: '在文档中搜索...',
+                    previous: '上一个 (Shift+Enter)',
+                    next: '下一个 (Enter)',
+                    close: '关闭 (Esc)',
+                    closeTab: '关闭标签页 (Ctrl+W)',
+                    version: '版本',
+                    description: '适用于 Windows 的轻量级 Markdown 阅读器',
+                    author: '作者',
+                    copyright: '版权所有',
+                    license: '许可证',
+                    thirdPartyNotices: '第三方声明',
+                    backToAbout: '返回关于页面',
+                    copy: '复制',
+                    copied: '已复制',
+                    copyCode: '复制代码',
+                    copyMermaidSource: '复制 Mermaid 源代码',
+                    diagramError: '图表错误'
+                },
+                hi: {
+                    openFile: 'फ़ाइल खोलें (Ctrl+O)',
+                    about: 'MarkdownReader के बारे में',
+                    searchDocument: 'दस्तावेज़ में खोजें...',
+                    previous: 'पिछला (Shift+Enter)',
+                    next: 'अगला (Enter)',
+                    close: 'बंद करें (Esc)',
+                    closeTab: 'टैब बंद करें (Ctrl+W)',
+                    version: 'संस्करण',
+                    description: 'Windows के लिए हल्का Markdown रीडर',
+                    author: 'लेखक',
+                    copyright: 'कॉपीराइट',
+                    license: 'लाइसेंस',
+                    thirdPartyNotices: 'तृतीय-पक्ष सूचनाएं',
+                    backToAbout: 'परिचय पर वापस जाएं',
+                    copy: 'कॉपी करें',
+                    copied: 'कॉपी किया गया',
+                    copyCode: 'कोड कॉपी करें',
+                    copyMermaidSource: 'Mermaid स्रोत कॉपी करें',
+                    diagramError: 'आरेख त्रुटि'
+                },
+                de: {
+                    openFile: 'Datei öffnen (Strg+O)',
+                    about: 'Über MarkdownReader',
+                    searchDocument: 'Dokument durchsuchen...',
+                    previous: 'Zurück (Shift+Enter)',
+                    next: 'Weiter (Enter)',
+                    close: 'Schließen (Esc)',
+                    closeTab: 'Tab schließen (Strg+W)',
+                    version: 'Version',
+                    description: 'Leichter Markdown-Reader für Windows',
+                    author: 'Autor',
+                    copyright: 'Urheberrecht',
+                    license: 'Lizenz',
+                    thirdPartyNotices: 'Hinweise zu Drittanbietern',
+                    backToAbout: 'Zurück zu Über',
+                    copy: 'Kopieren',
+                    copied: 'Kopiert',
+                    copyCode: 'Code kopieren',
+                    copyMermaidSource: 'Mermaid-Quelltext kopieren',
+                    diagramError: 'Diagrammfehler'
+                },
+                ja: {
+                    openFile: 'ファイルを開く (Ctrl+O)',
+                    about: 'MarkdownReader について',
+                    searchDocument: 'ドキュメントを検索...',
+                    previous: '前へ (Shift+Enter)',
+                    next: '次へ (Enter)',
+                    close: '閉じる (Esc)',
+                    closeTab: 'タブを閉じる (Ctrl+W)',
+                    version: 'バージョン',
+                    description: 'Windows 用の軽量 Markdown リーダー',
+                    author: '作成者',
+                    copyright: '著作権',
+                    license: 'ライセンス',
+                    thirdPartyNotices: 'サードパーティーに関する通知',
+                    backToAbout: '概要に戻る',
+                    copy: 'コピー',
+                    copied: 'コピーしました',
+                    copyCode: 'コードをコピー',
+                    copyMermaidSource: 'Mermaid ソースをコピー',
+                    diagramError: '図のエラー'
+                },
+                fr: {
+                    openFile: 'Ouvrir un fichier (Ctrl+O)',
+                    about: 'À propos de MarkdownReader',
+                    searchDocument: 'Rechercher dans le document...',
+                    previous: 'Précédent (Maj+Entrée)',
+                    next: 'Suivant (Entrée)',
+                    close: 'Fermer (Échap)',
+                    closeTab: 'Fermer l’onglet (Ctrl+W)',
+                    version: 'Version',
+                    description: 'Lecteur Markdown léger pour Windows',
+                    author: 'Auteur',
+                    copyright: 'Droits d’auteur',
+                    license: 'Licence',
+                    thirdPartyNotices: 'Avis concernant les tiers',
+                    backToAbout: 'Retour à À propos',
+                    copy: 'Copier',
+                    copied: 'Copié',
+                    copyCode: 'Copier le code',
+                    copyMermaidSource: 'Copier le code Mermaid',
+                    diagramError: 'Erreur de diagramme'
+                },
+                ru: {
+                    openFile: 'Открыть файл (Ctrl+O)',
+                    about: 'О программе MarkdownReader',
+                    searchDocument: 'Поиск в документе...',
+                    previous: 'Назад (Shift+Enter)',
+                    next: 'Далее (Enter)',
+                    close: 'Закрыть (Esc)',
+                    closeTab: 'Закрыть вкладку (Ctrl+W)',
+                    version: 'Версия',
+                    description: 'Лёгкая программа для чтения Markdown в Windows',
+                    author: 'Автор',
+                    copyright: 'Авторские права',
+                    license: 'Лицензия',
+                    thirdPartyNotices: 'Уведомления третьих лиц',
+                    backToAbout: 'Назад к сведениям',
+                    copy: 'Копировать',
+                    copied: 'Скопировано',
+                    copyCode: 'Копировать код',
+                    copyMermaidSource: 'Копировать исходный код Mermaid',
+                    diagramError: 'Ошибка диаграммы'
+                },
+                ko: {
+                    openFile: '파일 열기 (Ctrl+O)',
+                    about: 'MarkdownReader 정보',
+                    searchDocument: '문서에서 검색...',
+                    previous: '이전 (Shift+Enter)',
+                    next: '다음 (Enter)',
+                    close: '닫기 (Esc)',
+                    closeTab: '탭 닫기 (Ctrl+W)',
+                    version: '버전',
+                    description: 'Windows용 경량 Markdown 리더',
+                    author: '작성자',
+                    copyright: '저작권',
+                    license: '라이선스',
+                    thirdPartyNotices: '타사 고지',
+                    backToAbout: '정보로 돌아가기',
+                    copy: '복사',
+                    copied: '복사됨',
+                    copyCode: '코드 복사',
+                    copyMermaidSource: 'Mermaid 소스 복사',
+                    diagramError: '다이어그램 오류'
+                }
+            };
+
+            const browserLocale = (navigator.language || 'en').toLowerCase();
+            const supportedLocales = Object.keys(translations);
+            const locale = supportedLocales.find(candidate => browserLocale.startsWith(candidate)) || 'en';
+
+            function t(key) {
+                return translations[locale][key] || translations.en[key] || key;
+            }
+
+            function applyTranslations() {
+                document.documentElement.lang = locale;
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    element.textContent = t(element.dataset.i18n);
+                });
+                document.querySelectorAll('[data-i18n-title]').forEach(element => {
+                    element.title = t(element.dataset.i18nTitle);
+                });
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                    element.placeholder = t(element.dataset.i18nPlaceholder);
+                });
+                document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
+                    element.setAttribute('aria-label', t(element.dataset.i18nAriaLabel));
+                });
+            }
+
+            applyTranslations();
 
             const tabList = document.getElementById('tab-list');
             const tabPanes = document.getElementById('tab-panes');
@@ -1161,10 +1400,10 @@ pub fn build_shell_html(config: &Config) -> String {
 
             function copyText(textToCopy, copyBtn) {
                 function showCopied() {
-                    copyBtn.textContent = 'Copied';
+                    copyBtn.textContent = t('copied');
                     copyBtn.classList.add('copied');
                     setTimeout(() => {
-                        copyBtn.textContent = 'Copy';
+                        copyBtn.textContent = t('copy');
                         copyBtn.classList.remove('copied');
                     }, 1500);
                 }
@@ -1217,8 +1456,8 @@ pub fn build_shell_html(config: &Config) -> String {
 
                     const copyBtn = document.createElement('button');
                     copyBtn.className = 'code-copy-btn';
-                    copyBtn.textContent = 'Copy';
-                    copyBtn.title = 'Copy code';
+                    copyBtn.textContent = t('copy');
+                    copyBtn.title = t('copyCode');
 
                     copyBtn.addEventListener('click', () => {
                         copyText(codeEl.textContent, copyBtn);
@@ -1433,7 +1672,7 @@ pub fn build_shell_html(config: &Config) -> String {
                         const errHeader = document.createElement('div');
                         errHeader.className = 'mermaid-error-header';
                         errHeader.innerHTML = `
-                            <span class="mermaid-error-badge">⚠️ Diagram Error</span>
+                            <span class="mermaid-error-badge">⚠️ ${escapeHtml(t('diagramError'))}</span>
                             <span class="mermaid-error-text">${escapeHtml(errMsg)}</span>
                         `;
                         errContainer.appendChild(errHeader);
@@ -1451,8 +1690,8 @@ pub fn build_shell_html(config: &Config) -> String {
 
                         const copyBtn = document.createElement('button');
                         copyBtn.className = 'code-copy-btn';
-                        copyBtn.textContent = 'Copy';
-                        copyBtn.title = 'Copy Mermaid source';
+                        copyBtn.textContent = t('copy');
+                        copyBtn.title = t('copyMermaidSource');
                         copyBtn.addEventListener('click', () => copyText(rawCode, copyBtn));
                         header.appendChild(copyBtn);
 
@@ -1613,7 +1852,7 @@ pub fn build_shell_html(config: &Config) -> String {
                 const closeEl = document.createElement('span');
                 closeEl.className = 'tab-close';
                 closeEl.textContent = '×';
-                closeEl.title = 'Fechar Aba (Ctrl+W)';
+                closeEl.title = t('closeTab');
 
                 tabEl.appendChild(titleEl);
                 tabEl.appendChild(closeEl);
@@ -1998,6 +2237,12 @@ mod tests {
         assert!(shell.contains("id=\"tab-bar\""));
         assert!(shell.contains("id=\"tab-list\""));
         assert!(shell.contains("id=\"btn-new-tab\""));
+        assert!(shell.contains("data-i18n-title=\"openFile\""));
+        assert!(shell.contains("const supportedLocales = Object.keys(translations)"));
+        for locale in ["en", "pt", "es", "zh", "hi", "de", "ja", "fr", "ru", "ko"] {
+            assert!(shell.contains(&format!("{locale}: {{")));
+        }
+        assert!(!shell.contains("title=\"Abrir Arquivo"));
         assert!(shell.contains("id=\"btn-about\""));
         assert!(shell.contains("id=\"find-box\""));
         assert!(shell.contains("id=\"tab-panes\""));
@@ -2060,7 +2305,7 @@ mod tests {
         assert!(shell.contains("id=\"about-close-btn\""));
         assert!(shell.contains("id=\"btn-show-notices\""));
         assert!(shell.contains("id=\"btn-notices-back\""));
-        assert!(shell.contains("Version 1.1.1"));
+        assert!(shell.contains("data-i18n=\"version\">Version</span> 1.1.1"));
         assert!(shell.contains("Sergio Righi"));
         assert!(shell.contains("© 2026 Sergio Righi") || shell.contains("&copy; 2026 Sergio Righi"));
         assert!(shell.contains("MIT License"));
